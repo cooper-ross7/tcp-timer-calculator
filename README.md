@@ -1,0 +1,1 @@
+Simulates tcp's calculation of an exponential weighted moving average (EWMA). Takes computer clock granularity and minimum RTO on the command line, and continuously asks for sample RTTs to calculate new RTOs until the user terminates.
