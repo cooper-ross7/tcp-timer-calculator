@@ -7,6 +7,7 @@
  */
 #include <iostream>
 #include <string.h>
+#include <cmath>
 using namespace std;
 
 int main (int argc, char * argv[]) {
@@ -26,18 +27,19 @@ int main (int argc, char * argv[]) {
     // Declare clock granularity, minimum RTO, sample RTT, deviation RTT, estimated RTT,
     // timeout interval, beta, and alpha.
     double gran, minRTO, sRTT, devRTT, estRTT, toi;
-    double beta = 0.25;
-    double alpha = 0.125;
+    double beta = 0.25, alpha = 0.125;
     gran = stod(argv[1]);
     minRTO = stod(argv[2]);
     toi = 1;
 
     cout << endl << "Beginning RTO: " << toi << endl << endl;
 
-    // Ask for first sample RTT, ending the program if a value <= 0 is given
+    // Ask for first sample RTT, ending the program if a value <= 0 is given,
+    // and round it to the clock granularity
     cout << "Enter the first sample RTT (enter a value <=0 to quit) >";
     cin >> sRTT;
     if (sRTT <= 0) return 0;
+    sRTT = (ceil(sRTT / gran) * gran);
 
     // Calculate toi based on first sample
     devRTT = sRTT / 2;
@@ -45,7 +47,9 @@ int main (int argc, char * argv[]) {
     if (gran > (4 * devRTT)) toi = estRTT + gran;
     else toi = estRTT + (4 * devRTT);
 
-    // Ensure the RTO does not fall below the minimum value and output it
+    // Ensure the RTO rounds to the clock granularity and does not fall
+    // below the minimum value, then output it
+    toi = ceil(toi / gran) * gran;
     if (toi < minRTO) toi = minRTO;
     cout << "New RTO: " << toi << endl << endl;
 
@@ -53,6 +57,7 @@ int main (int argc, char * argv[]) {
     cout << "Enter the next sample RTT (enter a value <= 0 to quit) >";
     cin >> sRTT;
     if (sRTT <= 0) return 0;
+    sRTT = (ceil(sRTT / gran) * gran); // Rounding
 
     // Calculate and output the new RTO until the user exits
     while (sRTT > 0) {
@@ -61,13 +66,16 @@ int main (int argc, char * argv[]) {
         if (gran > (4 * devRTT)) toi = estRTT + gran;
         else toi = estRTT + (4 * devRTT);
 
-        // Ensure the RTO does not fall below the minimum value
+        // Ensure the RTO does not fall below the minimum value, and round 
+        // up to the clock granularity
         if (toi < minRTO) toi = minRTO;
+        toi = ceil(toi / gran) * gran;
 
         cout << "New RTO: " << toi << endl << endl;
 
         cout << "Enter the next sample RTT (enter a value <= 0 to quit) >";
         cin >> sRTT;
+        sRTT = (ceil(sRTT / gran) * gran); // Rounding
     }
 
     return 0;
