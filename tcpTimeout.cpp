@@ -29,6 +29,7 @@ int main (int argc, char * argv[]) {
         return 2;
     }
 
+    
     // Declare clock granularity, minimum RTO, sample RTT, deviation RTT, estimated RTT,
     // timeout interval, beta, and alpha.
     double gran, minRTO, sRTT, devRTT, estRTT, toi, roundedtoi, finaltoi, oldDevRTT, oldEstRTT;
@@ -39,6 +40,7 @@ int main (int argc, char * argv[]) {
 
     cout << endl << "Beginning RTO: " << toi << endl << endl;
 
+    
     // Ask for first sample RTT, ending the program if a value <= 0 is given,
     // and round it to the clock granularity
     cout << "Enter the first sample RTT (enter a value <=0 to quit) >";
@@ -75,14 +77,14 @@ int main (int argc, char * argv[]) {
 
     cout << "New RTO: " << roundedtoi << endl << endl;
 
+    
     // Ask for next sample RTT before beginning loop
     cout << "Enter the next sample RTT (enter a value <= 0 to quit) >";
     cin >> sRTT;
-    if (sRTT <= 0) return 0;
-    sRTT = (ceil(sRTT / gran) * gran); // Rounding
-
+    
     // Calculate and output the new RTO until the user exits
     while (sRTT > 0) {
+        sRTT = (ceil(sRTT / gran) * gran); // Rounding
         oldDevRTT = devRTT, oldEstRTT = estRTT;
         devRTT = (1 - beta) * devRTT + beta * abs(sRTT - estRTT);
         estRTT = (1 - alpha) * estRTT + alpha * sRTT;
@@ -94,8 +96,6 @@ int main (int argc, char * argv[]) {
         roundedtoi = ceil(toi / gran) * gran;
         if (roundedtoi < minRTO) finaltoi = minRTO;
         else finaltoi = roundedtoi;
-
-
 
         // Output optional debug info if flag was triggered
         if (debugFlag) {
@@ -113,22 +113,11 @@ int main (int argc, char * argv[]) {
             cout << "*************************************************************************\n\n";
         }
 
-
         cout << "New RTO: " << roundedtoi << endl << endl;
 
         cout << "Enter the next sample RTT (enter a value <= 0 to quit) >";
         cin >> sRTT;
-        sRTT = (ceil(sRTT / gran) * gran); // Rounding
     }
 
     return 0;
-}
-
-
-int getSRTT() {
-    int sRTT;
-    cin >> sRTT;
-    
-
-
 }
